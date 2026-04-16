@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
 import Layout from "./components/Layout";
+import FormCadastro from "./components/FormCadastro";
 import Home from "./pages/Home";
 import EquipePage from "./pages/EquipePage";
 import ContadoresPage from "./pages/ContadoresPage";
@@ -20,6 +21,9 @@ export default function App() {
             path="contadores" 
             element={<ContadoresPage valor={valor} setValor={setValor} />} 
           />
+
+          {/* Nova rota */}
+          <Route path="cadastro" element={<FormCadastro />} />
         </Route>
 
       </Routes>
