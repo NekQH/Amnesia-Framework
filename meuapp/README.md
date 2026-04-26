@@ -37,7 +37,7 @@ Localizados em `src/components/ui/`, são os pilares visuais da aplicação:
 - **Card.js:** Container genérico para agrupar informações (utilizado na listagem de equipe, filmes e contadores).
 - **Modal.js:** Janela flutuante com fundo desfocado que trava a rolagem da página quando aberta, usada extensivamente para exibir o detalhamento dos filmes, sucessos e erros de cadastro.
 
-### 📱 Como as Telas Funcionam
+Como as Telas Funcionam
 
 1. **Página Inicial (`Home.js`)**
    - **O que faz:** Uma *Hero Section* chamativa convidando o usuário a criar sua conta. Funciona como a vitrine do sistema.
