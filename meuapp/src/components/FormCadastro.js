@@ -21,7 +21,6 @@ function FormCadastro() {
 
   const [carregando, setCarregando] = useState(false);
 
-  // Estados dos Modais
   const [modalSucesso, setModalSucesso] = useState(false);
   const [modalErro, setModalErro] = useState({ isOpen: false, message: "" });
   const [modalConfirmacao, setModalConfirmacao] = useState(false);
@@ -40,7 +39,6 @@ function FormCadastro() {
     try {
       await cadastrarUsuario(formData);
       setModalSucesso(true);
-      // Aguarda 2 segundos e redireciona para filmes
       setTimeout(() => {
         navigate('/filmes');
       }, 2000);
@@ -115,7 +113,6 @@ function FormCadastro() {
                 />
               </div>
               <div style={{ flex: 1 }}>
-                {/* Usando o layout do Input para o Select */}
                 <div className="input-wrapper">
                   <label className="input-label" htmlFor="genero">Gênero</label>
                   <select
@@ -161,7 +158,6 @@ function FormCadastro() {
           </form>
         </Card>
 
-        {/* Visualização em tempo real do estado */}
         <div className="state-viewer">
           <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success-color)' }}></span>
@@ -171,7 +167,6 @@ function FormCadastro() {
         </div>
       </div>
 
-      {/* Modal de Sucesso */}
       <Modal 
         isOpen={modalSucesso} 
         onClose={() => setModalSucesso(false)}
@@ -186,7 +181,6 @@ function FormCadastro() {
         </div>
       </Modal>
 
-      {/* Modal de Erro */}
       <Modal 
         isOpen={modalErro.isOpen} 
         onClose={() => setModalErro({ isOpen: false, message: "" })}
@@ -201,7 +195,6 @@ function FormCadastro() {
         </div>
       </Modal>
 
-      {/* Modal de Confirmação */}
       <Modal 
         isOpen={modalConfirmacao} 
         onClose={() => setModalConfirmacao(false)}

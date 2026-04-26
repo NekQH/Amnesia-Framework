@@ -90,7 +90,6 @@
   margin-top: 2rem;
 }
 
-/* State Viewer */
 .state-viewer {
   background-color: #0d0f13;
   border: 1px solid var(--border-color);
@@ -111,7 +110,6 @@
   font-family: 'Courier New', Courier, monospace;
 }
 
-/* Modal Content Styles */
 .modal-feedback-content {
   display: flex;
   flex-direction: column;
@@ -132,7 +130,6 @@
   line-height: 1.5;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .form-layout {
     grid-template-columns: 1fr;

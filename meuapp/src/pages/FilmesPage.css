@@ -26,7 +26,7 @@
 .filme-image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 150%; /* Aspect ratio de poster */
+  padding-top: 150%;
   overflow: hidden;
 }
 
@@ -75,9 +75,8 @@
   text-overflow: ellipsis;
 }
 
-/* Modal do Filme Customizações (sobrepondo o body padding padrão do Modal) */
 .modal-filme-content {
-  margin: -1.5rem; /* Remove o padding do body do Modal base */
+  margin: -1.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -90,7 +89,6 @@
   border-top-right-radius: var(--radius-lg);
 }
 
-/* Botões de Avaliação */
 .avaliacao-botoes {
   display: flex;
   gap: 1rem;
@@ -130,7 +128,6 @@
   color: var(--danger-color) !important;
 }
 
-/* Comentários */
 .comentarios-lista {
   max-height: 250px;
   overflow-y: auto;

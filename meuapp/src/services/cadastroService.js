@@ -1,7 +1,6 @@
 async function cadastrarUsuario(dados) {
   validarDados(dados);
 
-  // Simulação de chamada à API (substitua por fetch real futuramente)
   await new Promise((res) => setTimeout(res, 800));
 
   return {

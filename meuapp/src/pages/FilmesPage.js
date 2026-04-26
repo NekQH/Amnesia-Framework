@@ -48,9 +48,8 @@ export default function FilmesPage() {
   const [filmes, setFilmes] = useState(FILMES_INICIAIS);
   const [filmeSelecionado, setFilmeSelecionado] = useState(null);
   
-  // Estado do formulário de avaliação
   const [comentario, setComentario] = useState('');
-  const [avaliacao, setAvaliacao] = useState(null); // 'bom' ou 'ruim'
+  const [avaliacao, setAvaliacao] = useState(null);
 
   const abrirFilme = (filme) => {
     setFilmeSelecionado(filme);
@@ -85,7 +84,6 @@ export default function FilmesPage() {
       })
     );
 
-    // Atualiza o filme selecionado para exibir o comentário na hora
     setFilmeSelecionado(prev => ({
       ...prev,
       comments: [novoComentario, ...prev.comments]
@@ -118,7 +116,6 @@ export default function FilmesPage() {
         ))}
       </div>
 
-      {/* Modal do Filme */}
       <Modal isOpen={!!filmeSelecionado} onClose={fecharFilme}>
         {filmeSelecionado && (
           <div className="modal-filme-content">

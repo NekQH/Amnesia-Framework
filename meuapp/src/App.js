@@ -23,7 +23,6 @@ export default function App() {
             element={<ContadoresPage valor={valor} setValor={setValor} />} 
           />
 
-          {/* Nova rota */}
           <Route path="cadastro" element={<FormCadastro />} />
           <Route path="filmes" element={<FilmesPage />} />
         </Route>

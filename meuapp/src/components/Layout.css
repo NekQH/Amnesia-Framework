@@ -59,7 +59,6 @@
   padding-bottom: 3rem;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .nav-container {
     flex-direction: column;
