@@ -20,8 +20,22 @@ function validarDados(dados) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dados.email))
     erros.push("E-mail inválido");
 
-  if (dados.idade && (dados.idade < 1 || dados.idade > 120))
-    erros.push("Idade fora do intervalo válido");
+  if (dados.dataNascimento) {
+    const dataNasc = new Date(dados.dataNascimento);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNasc.getFullYear();
+    const mes = hoje.getMonth() - dataNasc.getMonth();
+    
+    if (mes < 0 || (mes === 0 && hoje.getDate() < dataNasc.getDate())) {
+      idade--;
+    }
+    
+    if (idade < 18) {
+      erros.push("Você deve ter 18 anos ou mais para usar o Amnesia");
+    }
+  } else {
+    erros.push("Data de nascimento é obrigatória");
+  }
 
   if (!dados.aceiteTermos)
     erros.push("Você deve aceitar os termos de uso");
