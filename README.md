@@ -12,6 +12,7 @@ O projeto foi construído pelos seguintes alunos:
 - **Felipe** - Desenvolvedor
 - **Enzo** - Desenvolvedor
 - **Davi** - Desenvolvedor
+- **Carlos** - Desenvolvedor
 
 ---
 
