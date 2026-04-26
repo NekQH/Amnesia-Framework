@@ -6,7 +6,7 @@ Trata-se de uma aplicação React completa que explora desde conceitos fundament
 
 ---
 
-## 👥 Equipe de Desenvolvimento
+Equipe de Desenvolvimento
 
 O projeto foi construído pelos seguintes alunos:
 - **Felipe** - Desenvolvedor
@@ -15,7 +15,7 @@ O projeto foi construído pelos seguintes alunos:
 
 ---
 
-## 🎯 Proposta do Projeto
+Proposta do Projeto
 
 O **Amnesia** é um sistema interativo projetado para que usuários possam se cadastrar, avaliar e comentar sobre filmes do nosso catálogo exclusivo. A interface foi totalmente refatorada para utilizar um *Design System* próprio (Dark Mode), sem a dependência de frameworks CSS pesados, provando o domínio em CSS puro e variáveis.
 
@@ -26,11 +26,11 @@ O projeto foi dividido para demonstrar diversos cenários exigidos pela discipli
 
 ---
 
-## 📂 Estrutura do Código e Componentes
+Estrutura do Código e Componentes
 
 A aplicação está organizada de forma modular, separando Páginas (Telas inteiras), Componentes Globais (Navbar) e Componentes de UI reutilizáveis (Botões, Modais, Inputs).
 
-### 🧩 Componentes Base (UI)
+Componentes Base (UI)
 Localizados em `src/components/ui/`, são os pilares visuais da aplicação:
 - **Button.js:** Botões com suporte a estado de carregamento (*loading spin*) e estilos dinâmicos (primário, secundário, perigo).
 - **Input.js:** Campos de texto flexíveis que suportam validação de erro e integração com ícones.
@@ -59,7 +59,7 @@ Localizados em `src/components/ui/`, são os pilares visuais da aplicação:
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+Tecnologias Utilizadas
 
 - **React.js:** (Create React App).
 - **React Router Dom:** Para o controle e navegação das rotas (`/`, `/equipe`, `/contadores`, `/cadastro`, `/filmes`).
@@ -68,7 +68,7 @@ Localizados em `src/components/ui/`, são os pilares visuais da aplicação:
 
 ---
 
-## 💻 Como rodar o projeto localmente
+Como rodar o projeto localmente
 
 Para visualizar o projeto e rodar a aplicação em seu computador, siga os passos abaixo no terminal, na pasta do projeto (`meuapp`):
 
