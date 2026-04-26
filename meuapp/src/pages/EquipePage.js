@@ -10,6 +10,7 @@ export default function EquipePage() {
         <Equipe nome="Felipe" cargo="Desenvolvedor" idade={20} github="https://github.com/NekQH" linkedin="https://www.linkedin.com/in/felipeurbanekg/" />
         <Equipe nome="Enzo" cargo="Desenvolvedor" idade={20} github="https://github.com" linkedin="https://linkedin.com" />
         <Equipe nome="Davi" cargo="Desenvolvedor" idade={19} github="https://github.com" linkedin="https://linkedin.com" />
+        <Equipe nome="Carlos" cargo="Desenvolvedor" idade={20} github="https://github.com" linkedin="https://linkedin.com" />
       </div>
     </div>
   );
