@@ -21,7 +21,7 @@ const FILMES_INICIAIS = [
     year: 2023,
     genre: 'Terror',
     synopsis: 'Quando um estilo global não documentado é aplicado, as divs começam a flutuar sozinhas assombrando a equipe.',
-    image: 'https://images.unsplash.com/photo-1505685296765-3a273fc160d6?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1555099962-4199c345e5dd?auto=format&fit=crop&w=800&q=80',
     comments: [],
   },
   {

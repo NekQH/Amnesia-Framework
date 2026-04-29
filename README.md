@@ -29,7 +29,13 @@ O projeto foi dividido para demonstrar diversos cenários exigidos pela discipli
 
 Estrutura do Código e Componentes
 
-A aplicação está organizada de forma modular, separando Páginas (Telas inteiras), Componentes Globais (Navbar) e Componentes de UI reutilizáveis (Botões, Modais, Inputs).
+A aplicação está organizada de forma modular, separando Páginas (Telas inteiras), Componentes Globais (Navbar, Footer, Layout) e Componentes de UI reutilizáveis (Botões, Modais, Inputs).
+
+Componentes Globais (Layout)
+Localizados em `src/components/`:
+- **Navbar.js:** Barra de navegação do sistema com links para as páginas principais.
+- **Footer.js:** Rodapé padrão presente em todas as telas da aplicação.
+- **Layout.js:** O container central da aplicação, configurado no React Router, onde as páginas (`Outlet`) são renderizadas entre o Navbar e o Footer.
 
 Componentes Base (UI)
 Localizados em `src/components/ui/`, são os pilares visuais da aplicação:
