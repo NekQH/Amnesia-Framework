@@ -20,6 +20,10 @@
   align-items: start;
 }
 
+.form-layout > * {
+  min-width: 0; /* Impede o grid blowout: evita que a coluna do JSON expanda e empurre o formulário */
+}
+
 .form-card {
   padding: 2rem;
 }
@@ -108,6 +112,8 @@
   overflow-x: auto;
   border: 1px solid rgba(255, 255, 255, 0.05);
   font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap; /* Quebra as linhas se o texto for muito grande */
+  word-wrap: break-word;
 }
 
 .modal-feedback-content {

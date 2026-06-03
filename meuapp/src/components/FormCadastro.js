@@ -38,6 +38,8 @@ function FormCadastro() {
     setCarregando(true);
     try {
       await cadastrarUsuario(formData);
+      // Persiste o nome do usuário para fins de boas-vindas na tela de filmes
+      localStorage.setItem("usuarioLogado", formData.nome);
       setModalSucesso(true);
       setTimeout(() => {
         navigate('/filmes');

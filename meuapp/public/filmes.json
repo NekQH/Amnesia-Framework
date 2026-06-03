@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "title": "Matrix",
+    "year": 1999,
+    "genre": "Ficção Científica, Ação",
+    "synopsis": "Um programador de computador descobre uma verdade terrível: a vida que ele conhece é uma simulação elaborada por máquinas cibernéticas maliciosas, e ele decide se juntar a uma rebelião para destruir o sistema.",
+    "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
+    "comments": []
+  },
+  {
+    "id": 2,
+    "title": "A Rede Social",
+    "year": 2010,
+    "genre": "Drama, Biografia",
+    "synopsis": "Acompanhe a jornada de Mark Zuckerberg, um estudante de Harvard que cria o Facebook e se torna o mais jovem bilionário da história, enfrentando diversas batalhas legais e pessoais pelo caminho.",
+    "image": "https://images.unsplash.com/photo-1555099962-4199c345e5dd?auto=format&fit=crop&w=800&q=80",
+    "comments": []
+  },
+  {
+    "id": 3,
+    "title": "Ex Machina: Instinto Artificial",
+    "year": 2014,
+    "genre": "Ficção Científica, Suspense",
+    "synopsis": "Um jovem programador ganha a chance de passar uma semana na casa do brilhante e recluso CEO de sua empresa, onde ele deve participar de um experimento inovador envolvendo uma inteligência artificial em corpo feminino.",
+    "image": "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80",
+    "comments": []
+  },
+  {
+    "id": 4,
+    "title": "O Jogo da Imitação",
+    "year": 2014,
+    "genre": "Drama, História",
+    "synopsis": "Durante a Segunda Guerra Mundial, o matemático britânico Alan Turing tenta quebrar o código da máquina Enigma usada pela Alemanha nazista, ao mesmo tempo em que luta contra seus próprios segredos.",
+    "image": "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80",
+    "comments": []
+  }
+]

@@ -1,55 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../components/ui/Card';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import { obterFilmes } from '../services/filmesService';
 import './FilmesPage.css';
 
-const FILMES_INICIAIS = [
-  {
-    id: 1,
-    title: 'O Resgate do Código',
-    year: 2024,
-    genre: 'Ficção Científica',
-    synopsis: 'Um grupo de desenvolvedores viaja no tempo para consertar um bug crítico que destruirá a internet no futuro.',
-    image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
-    comments: [],
-  },
-  {
-    id: 2,
-    title: 'A Vingança do CSS',
-    year: 2023,
-    genre: 'Terror',
-    synopsis: 'Quando um estilo global não documentado é aplicado, as divs começam a flutuar sozinhas assombrando a equipe.',
-    image: 'https://images.unsplash.com/photo-1555099962-4199c345e5dd?auto=format&fit=crop&w=800&q=80',
-    comments: [],
-  },
-  {
-    id: 3,
-    title: 'Em Busca do Estado Perdido',
-    year: 2025,
-    genre: 'Aventura',
-    synopsis: 'Uma jornada épica de um componente filho tentando recuperar seus dados através de múltiplos contextos e Redux.',
-    image: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80',
-    comments: [],
-  },
-  {
-    id: 4,
-    title: 'O Fim da Branch',
-    year: 2022,
-    genre: 'Drama',
-    synopsis: 'A emocionante história de uma branch que nunca foi mesclada e os commits que ficaram esquecidos no tempo.',
-    image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80',
-    comments: [],
-  }
-];
-
 export default function FilmesPage() {
-  const [filmes, setFilmes] = useState(FILMES_INICIAIS);
+  const [filmes, setFilmes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
   const [filmeSelecionado, setFilmeSelecionado] = useState(null);
   
   const [comentario, setComentario] = useState('');
   const [avaliacao, setAvaliacao] = useState(null);
+  const [usuario, setUsuario] = useState('');
+
+  useEffect(() => {
+    // Buscar nome do usuário no localStorage
+    const nomePersistido = localStorage.getItem("usuarioLogado");
+    if (nomePersistido) {
+      setUsuario(nomePersistido);
+    }
+
+    let ativo = true;
+    async function carregarFilmes() {
+      try {
+        setLoading(true);
+        const dados = await obterFilmes();
+        if (ativo) {
+          setFilmes(dados);
+        }
+      } catch (err) {
+        if (ativo) {
+          setErro("Ocorreu um erro ao carregar o catálogo de filmes da API.");
+        }
+      } finally {
+        if (ativo) {
+          setLoading(false);
+        }
+      }
+    }
+    carregarFilmes();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("usuarioLogado");
+    setUsuario('');
+  };
 
   const abrirFilme = (filme) => {
     setFilmeSelecionado(filme);
@@ -96,25 +98,46 @@ export default function FilmesPage() {
   return (
     <div>
       <div className="filmes-header">
-        <h1 className="page-title">Catálogo de Filmes</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Explore nosso acervo exclusivo, avalie e deixe sua opinião.</p>
+        <div className="header-top-row">
+          <h1 className="page-title">Catálogo de Filmes</h1>
+          {usuario && (
+            <div className="usuario-saudacao">
+              <span>Olá, <strong>{usuario}</strong>! 🍿</span>
+              <button onClick={handleLogout} className="btn-logout">Sair</button>
+            </div>
+          )}
+        </div>
+        <p style={{ color: 'var(--text-muted)' }}>Explore nosso acervo exclusivo de tecnologia, avalie e deixe sua opinião.</p>
       </div>
 
-      <div className="filmes-grid">
-        {filmes.map(filme => (
-          <div key={filme.id} className="filme-card" onClick={() => abrirFilme(filme)}>
-            <div className="filme-image-wrapper">
-              <img src={filme.image} alt={filme.title} className="filme-image" />
-              <div className="filme-overlay">
-                <span className="filme-genre">{filme.genre}</span>
+      {loading ? (
+        <div className="loader-container">
+          <div className="premium-spinner"></div>
+          <p>Buscando títulos da API externa do TVMaze...</p>
+        </div>
+      ) : erro ? (
+        <div className="error-container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--danger-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <h3>Erro ao carregar catálogo</h3>
+          <p>{erro}</p>
+        </div>
+      ) : (
+        <div className="filmes-grid">
+          {filmes.map(filme => (
+            <div key={filme.id} className="filme-card" onClick={() => abrirFilme(filme)}>
+              <div className="filme-image-wrapper">
+                <img src={filme.image} alt={filme.title} className="filme-image" />
+                <div className="filme-overlay">
+                  <span className="filme-genre">{filme.genre}</span>
+                </div>
+              </div>
+              <div className="filme-info">
+                <h3 className="filme-title">{filme.title} ({filme.year})</h3>
               </div>
             </div>
-            <div className="filme-info">
-              <h3 className="filme-title">{filme.title} ({filme.year})</h3>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <Modal isOpen={!!filmeSelecionado} onClose={fecharFilme}>
         {filmeSelecionado && (
