@@ -1,3 +1,5 @@
+import { supabase } from './supabaseClient';
+
 const FALLBACK_FILMES = [
   {
     id: 1,
@@ -21,26 +23,75 @@ const FALLBACK_FILMES = [
 
 async function obterFilmes() {
   try {
-    // Para resolver a questão de serem "Filmes" (e não séries), e em português correto,
-    // criamos uma API simulada (JSON) na pasta public que retorna filmes reais e traduzidos.
-    // Isso continua cumprindo 100% o requisito de "Consumo de APIs e Requisições HTTP" via fetch.
-    const response = await fetch('/filmes.json');
+    const { data, error } = await supabase
+      .from('filmes')
+      .select('*')
+      .order('id', { ascending: false });
     
-    if (!response.ok) {
-      throw new Error(`Erro HTTP ao carregar os filmes. Status: ${response.status}`);
+    if (error) {
+      throw error;
     }
     
-    // Pequeno delay artificial de 800ms apenas para que o "spinner de loading premium" 
-    // seja visível na apresentação (melhoria de UX)
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    const data = await response.json();
-    return data;
-
+    return data || [];
   } catch (error) {
     console.warn("Falha no consumo da API de filmes. Carregando dados locais de backup (Resiliência).", error);
     return FALLBACK_FILMES;
   }
 }
 
-export { obterFilmes };
+async function adicionarFilme(filme) {
+  try {
+    const { data, error } = await supabase
+      .from('filmes')
+      .insert([filme])
+      .select();
+    
+    if (error) {
+      throw error;
+    }
+    
+    return data[0];
+  } catch (error) {
+    console.error("Erro ao adicionar filme:", error);
+    throw error;
+  }
+}
+
+async function atualizarFilme(id, filmeAtualizado) {
+  try {
+    const { data, error } = await supabase
+      .from('filmes')
+      .update(filmeAtualizado)
+      .eq('id', id)
+      .select();
+      
+    if (error) {
+      throw error;
+    }
+    
+    return data[0];
+  } catch (error) {
+    console.error("Erro ao atualizar filme:", error);
+    throw error;
+  }
+}
+
+async function removerFilme(id) {
+  try {
+    const { error } = await supabase
+      .from('filmes')
+      .delete()
+      .eq('id', id);
+      
+    if (error) {
+      throw error;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Erro ao remover filme:", error);
+    throw error;
+  }
+}
+
+export { obterFilmes, adicionarFilme, atualizarFilme, removerFilme };

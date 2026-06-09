@@ -1,39 +1,53 @@
+import { supabase } from './supabaseClient';
+
 async function cadastrarUsuario(dados) {
   validarDados(dados);
 
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: dados.nome,
-        email: dados.email,
-        birthDate: dados.dataNascimento,
-        gender: dados.genero,
-      }),
+    const { data, error } = await supabase.auth.signUp({
+      email: dados.email,
+      password: dados.senha,
+      options: {
+        data: {
+          nome: dados.nome,
+          dataNascimento: dados.dataNascimento,
+          genero: dados.genero
+        }
+      }
     });
 
-    if (!response.ok) {
-      throw new Error("Erro na resposta do servidor de cadastro");
+    if (error) {
+      throw error;
     }
 
-    const resData = await response.json();
-
     return {
       sucesso: true,
-      id: resData.id || Math.random().toString(36).slice(2, 9),
-      mensagem: `Usuário ${dados.nome} cadastrado com sucesso no servidor!`,
+      id: data?.user?.id,
+      mensagem: `Usuário ${dados.nome} cadastrado com sucesso!`,
     };
   } catch (error) {
-    console.warn("API de cadastro falhou. Acionando modo offline (resiliência).", error);
-    // Fallback local caso falte internet ou a API caia, garantindo que o usuário avance
-    return {
-      sucesso: true,
-      id: Math.random().toString(36).slice(2, 9),
-      mensagem: `Usuário ${dados.nome} cadastrado localmente (Modo Offline).`,
-    };
+    console.error("Erro no cadastro:", error);
+    throw new Error(error.message || "Erro ao realizar o cadastro");
+  }
+}
+
+async function loginUsuario(email, senha) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password: senha
+  });
+
+  if (error) {
+    throw new Error("Credenciais inválidas ou erro no login.");
+  }
+
+  return data;
+}
+
+async function logoutUsuario() {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Erro ao deslogar:", error);
   }
 }
 
@@ -42,6 +56,9 @@ function validarDados(dados) {
 
   if (!dados.nome?.trim())
     erros.push("Nome é obrigatório");
+
+  if (!dados.senha || dados.senha.length < 6)
+    erros.push("A senha deve ter pelo menos 6 caracteres");
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dados.email))
     erros.push("E-mail inválido");
@@ -70,4 +87,4 @@ function validarDados(dados) {
     throw new Error(erros.join(", "));
 }
 
-export { cadastrarUsuario };
+export { cadastrarUsuario, loginUsuario, logoutUsuario };

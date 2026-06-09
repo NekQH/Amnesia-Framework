@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import EquipePage from "./pages/EquipePage";
 import ContadoresPage from "./pages/ContadoresPage";
 import FilmesPage from "./pages/FilmesPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   const [valor, setValor] = useState(0);
@@ -24,7 +25,15 @@ export default function App() {
           />
 
           <Route path="cadastro" element={<FormCadastro />} />
-          <Route path="filmes" element={<FilmesPage />} />
+          
+          <Route 
+            path="filmes" 
+            element={
+              <ProtectedRoute>
+                <FilmesPage />
+              </ProtectedRoute>
+            } 
+          />
         </Route>
 
       </Routes>

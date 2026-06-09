@@ -1,19 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cadastrarUsuario } from "../services/cadastroService";
+import { cadastrarUsuario, loginUsuario } from "../services/cadastroService";
 import Card from "./ui/Card";
 import Input from "./ui/Input";
 import Button from "./ui/Button";
 import Modal from "./ui/Modal";
-import { User, Mail, Calendar, CheckCircle2, AlertCircle, HelpCircle } from "lucide-react";
+import { User, Mail, Calendar, CheckCircle2, AlertCircle, HelpCircle, Lock } from "lucide-react";
 import "./FormCadastro.css";
 
 function FormCadastro() {
   const navigate = useNavigate();
 
+  const [isLogin, setIsLogin] = useState(false);
+
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
+    senha: "",
     dataNascimento: "",
     genero: "",
     aceiteTermos: false,
@@ -37,13 +40,21 @@ function FormCadastro() {
     e.preventDefault();
     setCarregando(true);
     try {
-      await cadastrarUsuario(formData);
-      // Persiste o nome do usuário para fins de boas-vindas na tela de filmes
-      localStorage.setItem("usuarioLogado", formData.nome);
-      setModalSucesso(true);
-      setTimeout(() => {
-        navigate('/filmes');
-      }, 2000);
+      if (isLogin) {
+        const userData = await loginUsuario(formData.email, formData.senha);
+        localStorage.setItem("usuarioLogado", userData.user?.user_metadata?.nome || formData.email);
+        setModalSucesso(true);
+        setTimeout(() => {
+          navigate('/filmes');
+        }, 1500);
+      } else {
+        await cadastrarUsuario(formData);
+        localStorage.setItem("usuarioLogado", formData.nome);
+        setModalSucesso(true);
+        setTimeout(() => {
+          navigate('/filmes');
+        }, 1500);
+      }
     } catch (err) {
       setModalErro({ isOpen: true, message: err.message });
     } finally {
@@ -55,6 +66,7 @@ function FormCadastro() {
     setFormData({
       nome: "",
       email: "",
+      senha: "",
       dataNascimento: "",
       genero: "",
       aceiteTermos: false,
@@ -70,24 +82,26 @@ function FormCadastro() {
   return (
     <div className="form-page-container">
       <div className="form-header">
-        <h1 className="page-title">Crie sua Conta</h1>
-        <p>Preencha os dados abaixo para ter acesso a todos os recursos.</p>
+        <h1 className="page-title">{isLogin ? "Acesse sua Conta" : "Crie sua Conta"}</h1>
+        <p>{isLogin ? "Insira suas credenciais para entrar." : "Preencha os dados abaixo para ter acesso a todos os recursos."}</p>
       </div>
 
-      <div className="form-layout">
-        <Card className="form-card">
+      <div className="form-layout" style={{ gridTemplateColumns: isLogin ? '1fr' : '3fr 2fr' }}>
+        <Card className="form-card" style={{ maxWidth: isLogin ? '500px' : 'none', margin: isLogin ? '0 auto' : '0' }}>
           <form onSubmit={handleSubmit}>
-            <Input
-              label="Nome Completo"
-              type="text"
-              id="nome"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              placeholder="Digite seu nome"
-              icon={User}
-              required
-            />
+            {!isLogin && (
+              <Input
+                label="Nome Completo"
+                type="text"
+                id="nome"
+                name="nome"
+                value={formData.nome}
+                onChange={handleChange}
+                placeholder="Digite seu nome"
+                icon={User}
+                required
+              />
+            )}
 
             <Input
               label="E-mail"
@@ -101,72 +115,103 @@ function FormCadastro() {
               required
             />
 
-            <div className="form-row">
-              <div style={{ flex: 1 }}>
-                <Input
-                  label="Data de Nascimento"
-                  type="date"
-                  id="dataNascimento"
-                  name="dataNascimento"
-                  value={formData.dataNascimento}
-                  onChange={handleChange}
-                  icon={Calendar}
-                  required
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div className="input-wrapper">
-                  <label className="input-label" htmlFor="genero">Gênero</label>
-                  <select
-                    className="input-field"
-                    id="genero"
-                    name="genero"
-                    value={formData.genero}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="" disabled>Selecione...</option>
-                    <option value="masculino">Masculino</option>
-                    <option value="feminino">Feminino</option>
-                    <option value="outro">Outro</option>
-                    <option value="nao-informar">Prefiro não informar</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+            <Input
+              label="Senha"
+              type="password"
+              id="senha"
+              name="senha"
+              value={formData.senha}
+              onChange={handleChange}
+              placeholder="******"
+              icon={Lock}
+              required
+            />
 
-            <div className="checkbox-wrapper">
-              <input
-                type="checkbox"
-                id="aceiteTermos"
-                name="aceiteTermos"
-                checked={formData.aceiteTermos}
-                onChange={handleChange}
-                className="custom-checkbox"
-              />
-              <label htmlFor="aceiteTermos" className="checkbox-label">
-                Li e aceito os <a href="#termos" style={{ color: 'var(--accent-color)' }}>Termos de Uso</a> e a Política de Privacidade.
-              </label>
-            </div>
+            {!isLogin && (
+              <>
+                <div className="form-row">
+                  <div style={{ flex: 1 }}>
+                    <Input
+                      label="Data de Nascimento"
+                      type="date"
+                      id="dataNascimento"
+                      name="dataNascimento"
+                      value={formData.dataNascimento}
+                      onChange={handleChange}
+                      icon={Calendar}
+                      required
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div className="input-wrapper">
+                      <label className="input-label" htmlFor="genero">Gênero</label>
+                      <select
+                        className="input-field"
+                        id="genero"
+                        name="genero"
+                        value={formData.genero}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="" disabled>Selecione...</option>
+                        <option value="masculino">Masculino</option>
+                        <option value="feminino">Feminino</option>
+                        <option value="outro">Outro</option>
+                        <option value="nao-informar">Prefiro não informar</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="checkbox-wrapper">
+                  <input
+                    type="checkbox"
+                    id="aceiteTermos"
+                    name="aceiteTermos"
+                    checked={formData.aceiteTermos}
+                    onChange={handleChange}
+                    className="custom-checkbox"
+                  />
+                  <label htmlFor="aceiteTermos" className="checkbox-label">
+                    Li e aceito os <a href="#termos" style={{ color: 'var(--accent-color)' }}>Termos de Uso</a> e a Política de Privacidade.
+                  </label>
+                </div>
+              </>
+            )}
 
             <div className="form-actions">
-              <Button type="button" variant="secondary" onClick={requestReset} disabled={carregando}>
-                Limpar
-              </Button>
+              {!isLogin && (
+                <Button type="button" variant="secondary" onClick={requestReset} disabled={carregando}>
+                  Limpar
+                </Button>
+              )}
               <Button type="submit" variant="primary" isLoading={carregando} style={{ flex: 1 }}>
-                Criar Conta
+                {isLogin ? "Entrar" : "Criar Conta"}
               </Button>
             </div>
+            
+            <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+              <button 
+                type="button" 
+                onClick={() => setIsLogin(!isLogin)} 
+                style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }}
+              >
+                {isLogin ? "Ainda não tem conta? Cadastre-se" : "Já possui uma conta? Faça Login"}
+              </button>
+            </div>
+
           </form>
         </Card>
 
-        <div className="state-viewer">
-          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success-color)' }}></span>
-            Estado do Componente
-          </h3>
-          <pre className="json-preview">{JSON.stringify(formData, null, 2)}</pre>
-        </div>
+        {!isLogin && (
+          <div className="state-viewer">
+            <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success-color)' }}></span>
+              Estado do Componente
+            </h3>
+            <pre className="json-preview">{JSON.stringify({ ...formData, senha: formData.senha ? "******" : "" }, null, 2)}</pre>
+          </div>
+        )}
       </div>
 
       <Modal 
@@ -175,8 +220,8 @@ function FormCadastro() {
       >
         <div className="modal-feedback-content">
           <CheckCircle2 size={64} color="var(--success-color)" />
-          <h2>Cadastro Realizado!</h2>
-          <p>Olá, <strong>{formData.nome}</strong>! Conta criada com sucesso.</p>
+          <h2>{isLogin ? "Login Realizado!" : "Cadastro Realizado!"}</h2>
+          <p>Olá! {isLogin ? "Bem-vindo de volta" : "Conta criada com sucesso"}.</p>
           <p style={{ marginTop: '0.5rem', color: 'var(--accent-color)', fontSize: '0.9rem' }}>
             Redirecionando você para os filmes...
           </p>

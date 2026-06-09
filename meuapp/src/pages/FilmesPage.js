@@ -3,67 +3,120 @@ import Card from '../components/ui/Card';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import { obterFilmes } from '../services/filmesService';
+import { obterFilmes, adicionarFilme, atualizarFilme, removerFilme } from '../services/filmesService';
+import { Trash2, Edit, Plus, AlertCircle } from 'lucide-react';
 import './FilmesPage.css';
 
 export default function FilmesPage() {
   const [filmes, setFilmes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
-  const [filmeSelecionado, setFilmeSelecionado] = useState(null);
   
+  // Visualização de filme
+  const [filmeSelecionado, setFilmeSelecionado] = useState(null);
   const [comentario, setComentario] = useState('');
   const [avaliacao, setAvaliacao] = useState(null);
+  
+  // Autenticação e Usuário
   const [usuario, setUsuario] = useState('');
 
+  // Formulário (Create/Update)
+  const [modalFormAberto, setModalFormAberto] = useState(false);
+  const [formData, setFormData] = useState({ title: '', year: '', genre: '', synopsis: '', image: '' });
+  const [editandoId, setEditandoId] = useState(null);
+  const [salvando, setSalvando] = useState(false);
+
   useEffect(() => {
-    // Buscar nome do usuário no localStorage
     const nomePersistido = localStorage.getItem("usuarioLogado");
     if (nomePersistido) {
       setUsuario(nomePersistido);
     }
 
-    let ativo = true;
-    async function carregarFilmes() {
-      try {
-        setLoading(true);
-        const dados = await obterFilmes();
-        if (ativo) {
-          setFilmes(dados);
-        }
-      } catch (err) {
-        if (ativo) {
-          setErro("Ocorreu um erro ao carregar o catálogo de filmes da API.");
-        }
-      } finally {
-        if (ativo) {
-          setLoading(false);
-        }
-      }
-    }
     carregarFilmes();
-
-    return () => {
-      ativo = false;
-    };
   }, []);
+
+  async function carregarFilmes() {
+    try {
+      setLoading(true);
+      const dados = await obterFilmes();
+      setFilmes(dados);
+    } catch (err) {
+      setErro("Ocorreu um erro ao carregar o catálogo de filmes da API.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("usuarioLogado");
     setUsuario('');
+    window.location.href = '/cadastro'; 
   };
 
+  // Funções de CRUD UI
+  const abrirFormNovo = () => {
+    setFormData({ title: '', year: '', genre: '', synopsis: '', image: '' });
+    setEditandoId(null);
+    setModalFormAberto(true);
+  };
+
+  const abrirFormEditar = (e, filme) => {
+    e.stopPropagation();
+    setFormData({ 
+      title: filme.title, 
+      year: filme.year, 
+      genre: filme.genre, 
+      synopsis: filme.synopsis, 
+      image: filme.image 
+    });
+    setEditandoId(filme.id);
+    setModalFormAberto(true);
+  };
+
+  const handleDelete = async (e, id) => {
+    e.stopPropagation();
+    if (!window.confirm("Tem certeza que deseja excluir este filme?")) return;
+    
+    try {
+      await removerFilme(id);
+      setFilmes(prev => prev.filter(f => f.id !== id));
+    } catch (err) {
+      alert("Erro ao excluir filme.");
+    }
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSalvarFilme = async (e) => {
+    e.preventDefault();
+    setSalvando(true);
+    try {
+      if (editandoId) {
+        const atualizado = await atualizarFilme(editandoId, formData);
+        setFilmes(prev => prev.map(f => f.id === editandoId ? { ...f, ...atualizado } : f));
+      } else {
+        const novo = await adicionarFilme({ ...formData, comments: [] });
+        setFilmes([novo, ...filmes]);
+      }
+      setModalFormAberto(false);
+    } catch (err) {
+      alert("Erro ao salvar filme.");
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  // Funções de Avaliação
   const abrirFilme = (filme) => {
     setFilmeSelecionado(filme);
     setComentario('');
     setAvaliacao(null);
   };
 
-  const fecharFilme = () => {
-    setFilmeSelecionado(null);
-  };
-
-  const handleEnviarAvaliacao = (e) => {
+  const handleEnviarAvaliacao = async (e) => {
     e.preventDefault();
     if (!avaliacao) {
       alert("Por favor, marque se achou o filme Bom ou Ruim!");
@@ -77,22 +130,32 @@ export default function FilmesPage() {
       data: new Date().toLocaleDateString()
     };
 
-    setFilmes(prevFilmes => 
-      prevFilmes.map(f => {
-        if (f.id === filmeSelecionado.id) {
-          return { ...f, comments: [novoComentario, ...f.comments] };
-        }
-        return f;
-      })
-    );
+    const comentariosAtuais = filmeSelecionado.comments || [];
+    const commentsAtualizados = [novoComentario, ...comentariosAtuais];
 
-    setFilmeSelecionado(prev => ({
-      ...prev,
-      comments: [novoComentario, ...prev.comments]
-    }));
+    try {
+      // Atualizar no banco de dados
+      await atualizarFilme(filmeSelecionado.id, { comments: commentsAtualizados });
 
-    setComentario('');
-    setAvaliacao(null);
+      setFilmes(prevFilmes => 
+        prevFilmes.map(f => {
+          if (f.id === filmeSelecionado.id) {
+            return { ...f, comments: commentsAtualizados };
+          }
+          return f;
+        })
+      );
+
+      setFilmeSelecionado(prev => ({
+        ...prev,
+        comments: commentsAtualizados
+      }));
+
+      setComentario('');
+      setAvaliacao(null);
+    } catch (err) {
+      alert("Erro ao enviar avaliação.");
+    }
   };
 
   return (
@@ -100,24 +163,29 @@ export default function FilmesPage() {
       <div className="filmes-header">
         <div className="header-top-row">
           <h1 className="page-title">Catálogo de Filmes</h1>
-          {usuario && (
-            <div className="usuario-saudacao">
-              <span>Olá, <strong>{usuario}</strong>! 🍿</span>
-              <button onClick={handleLogout} className="btn-logout">Sair</button>
-            </div>
-          )}
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <Button variant="primary" onClick={abrirFormNovo} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Plus size={18} /> Novo Filme
+            </Button>
+            {usuario && (
+              <div className="usuario-saudacao">
+                <span>Olá, <strong>{usuario}</strong>! 🍿</span>
+                <button onClick={handleLogout} className="btn-logout">Sair</button>
+              </div>
+            )}
+          </div>
         </div>
-        <p style={{ color: 'var(--text-muted)' }}>Explore nosso acervo exclusivo de tecnologia, avalie e deixe sua opinião.</p>
+        <p style={{ color: 'var(--text-muted)' }}>Explore nosso acervo exclusivo, avalie e deixe sua opinião ou adicione novos títulos.</p>
       </div>
 
       {loading ? (
         <div className="loader-container">
           <div className="premium-spinner"></div>
-          <p>Buscando títulos da API externa do TVMaze...</p>
+          <p>Buscando títulos do banco de dados...</p>
         </div>
       ) : erro ? (
         <div className="error-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--danger-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <AlertCircle size={48} color="var(--danger-color)" />
           <h3>Erro ao carregar catálogo</h3>
           <p>{erro}</p>
         </div>
@@ -127,8 +195,26 @@ export default function FilmesPage() {
             <div key={filme.id} className="filme-card" onClick={() => abrirFilme(filme)}>
               <div className="filme-image-wrapper">
                 <img src={filme.image} alt={filme.title} className="filme-image" />
-                <div className="filme-overlay">
+                <div className="filme-overlay" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: '0.5rem' }}>
                   <span className="filme-genre">{filme.genre}</span>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginRight: '0.5rem' }}>
+                    <button 
+                      className="btn-icon-action" 
+                      onClick={(e) => abrirFormEditar(e, filme)}
+                      style={{ background: 'rgba(0,0,0,0.5)', border: 'none', padding: '0.4rem', borderRadius: '50%', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center' }}
+                      title="Editar Filme"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button 
+                      className="btn-icon-action" 
+                      onClick={(e) => handleDelete(e, filme.id)}
+                      style={{ background: 'rgba(239, 68, 68, 0.8)', border: 'none', padding: '0.4rem', borderRadius: '50%', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center' }}
+                      title="Excluir Filme"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="filme-info">
@@ -139,7 +225,44 @@ export default function FilmesPage() {
         </div>
       )}
 
-      <Modal isOpen={!!filmeSelecionado} onClose={fecharFilme}>
+      {/* MODAL DE CRIAÇÃO/EDIÇÃO */}
+      <Modal isOpen={modalFormAberto} onClose={() => setModalFormAberto(false)}>
+        <div style={{ padding: '1.5rem' }}>
+          <h2>{editandoId ? "Editar Filme" : "Adicionar Novo Filme"}</h2>
+          <form onSubmit={handleSalvarFilme} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+            <Input label="Título" name="title" value={formData.title} onChange={handleFormChange} required />
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <div style={{ flex: 1 }}>
+                <Input label="Ano de Lançamento" type="number" name="year" value={formData.year} onChange={handleFormChange} required />
+              </div>
+              <div style={{ flex: 1 }}>
+                <Input label="Gênero" name="genre" value={formData.genre} onChange={handleFormChange} required placeholder="Ex: Ação, Drama..." />
+              </div>
+            </div>
+            <Input label="URL da Imagem (Capa)" type="url" name="image" value={formData.image} onChange={handleFormChange} required placeholder="https://..." />
+            
+            <div className="input-wrapper">
+              <label className="input-label">Sinopse</label>
+              <textarea 
+                className="input-field" 
+                name="synopsis" 
+                value={formData.synopsis} 
+                onChange={handleFormChange} 
+                required 
+                rows={4}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <Button type="button" variant="secondary" onClick={() => setModalFormAberto(false)} style={{ flex: 1 }}>Cancelar</Button>
+              <Button type="submit" variant="primary" isLoading={salvando} style={{ flex: 1 }}>Salvar Filme</Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      {/* MODAL DE VISUALIZAÇÃO E AVALIAÇÃO */}
+      <Modal isOpen={!!filmeSelecionado && !modalFormAberto} onClose={() => setFilmeSelecionado(null)}>
         {filmeSelecionado && (
           <div className="modal-filme-content">
             <img src={filmeSelecionado.image} alt={filmeSelecionado.title} className="modal-filme-banner" />
@@ -181,12 +304,12 @@ export default function FilmesPage() {
                   onChange={(e) => setComentario(e.target.value)}
                   required
                 />
-                <Button type="submit" variant="primary" style={{ width: '100%' }}>
+                <Button type="submit" variant="primary" style={{ width: '100%', marginTop: '0.5rem' }}>
                   Enviar Avaliação
                 </Button>
               </form>
 
-              {filmeSelecionado.comments.length > 0 && (
+              {filmeSelecionado.comments && filmeSelecionado.comments.length > 0 && (
                 <div className="comentarios-lista">
                   <h4 style={{ margin: '1.5rem 0 1rem', fontSize: '1rem' }}>Comentários da Comunidade</h4>
                   {filmeSelecionado.comments.map(c => (
