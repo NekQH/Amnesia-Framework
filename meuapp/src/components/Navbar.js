@@ -32,7 +32,6 @@ export default function Navbar() {
           <Link to="/contadores" className="nav-link" onClick={closeMenu}>Contadores</Link>
           <Link to="/cadastro" className="nav-link" onClick={closeMenu}>Cadastro</Link>
           <Link to="/filmes" className="nav-link" onClick={closeMenu}>Filmes</Link>
-          <Link to="/documentacao" className="nav-link" onClick={closeMenu}>Doc RA3</Link>
         </div>
       </div>
     </nav>
