@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import EquipePage from "./pages/EquipePage";
 import ContadoresPage from "./pages/ContadoresPage";
 import FilmesPage from "./pages/FilmesPage";
+import DocumentacaoPage from "./pages/DocumentacaoPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
           />
 
           <Route path="cadastro" element={<FormCadastro />} />
+          <Route path="documentacao" element={<DocumentacaoPage />} />
           
           <Route 
             path="filmes" 
