@@ -1,87 +1,141 @@
 import React from 'react';
-import { Database, ShieldCheck, Code, Layers, CheckCircle } from 'lucide-react';
+import { Database, ShieldCheck, Code, Layers, CheckCircle, Home, Users, Calculator, FolderTree, Info } from 'lucide-react';
 import './DocumentacaoPage.css';
 
 export default function DocumentacaoPage() {
   return (
     <div className="container">
       <div className="doc-header">
-        <h1 className="page-title">Documentação RA3</h1>
+        <h1 className="page-title">Documentação Completa do Projeto</h1>
         <p style={{ color: 'var(--text-muted)' }}>
-          Entenda a arquitetura, as integrações e as tecnologias implementadas na entrega do RA3.
+          Um guia definitivo para compreender a arquitetura, estrutura de pastas e as tecnologias que compõem o Amnesia Framework (Trabalho Discente Efetivo).
         </p>
       </div>
 
       <div className="doc-content">
-        
-        <section className="doc-section">
-          <h2><Database size={24} /> 1. Conexão com o Supabase</h2>
-          <p>
-            O <strong>Supabase</strong> é uma plataforma Backend-as-a-Service (BaaS) baseada no PostgreSQL. Para conectar a nossa aplicação React ao banco de dados em nuvem, tomamos as seguintes medidas de segurança e arquitetura:
-          </p>
-          <ul>
-            <li><strong>Instalação do SDK Oficial:</strong> Utilizamos a biblioteca <code>@supabase/supabase-js</code> via NPM. Ela facilita a comunicação segura e fornece métodos prontos para Autenticação e Banco de Dados (CRUD).</li>
-            <li><strong>Variáveis de Ambiente (.env):</strong> As credenciais sensíveis (URL do Projeto e a Chave Pública <em>Anon Key</em>) foram isoladas no arquivo <code>.env</code> na raiz do projeto (`REACT_APP_SUPABASE_URL` e `REACT_APP_SUPABASE_ANON_KEY`). Isso evita que chaves fiquem expostas no código fonte.</li>
-            <li><strong>Cliente Singleton:</strong> Criamos o arquivo <code>src/services/supabaseClient.js</code>, que inicializa a conexão uma única vez e a exporta para toda a aplicação.</li>
-          </ul>
-          
-          <div className="code-block">
-            {`// src/services/supabaseClient.js
-import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+        {/* 1. VISÃO GERAL */}
+        <div style={{ marginBottom: '4rem' }}>
+          <h2 style={{ fontSize: '1.8rem', color: '#fff', borderBottom: '2px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Info size={28} color="var(--accent-color)" /> Visão Geral da Aplicação
+          </h2>
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);`}
-          </div>
-        </section>
+          <section className="doc-section">
+            <p>
+              O <strong>Amnesia Framework</strong> é uma Single Page Application (SPA) desenvolvida inteiramente com <strong>React.js</strong>. 
+              O objetivo principal é demonstrar de forma prática o uso de componentização, gerenciamento de estados (Hooks), rotas dinâmicas e persistência de dados na nuvem (Backend as a Service).
+            </p>
+            <p>
+              Qualquer usuário ou avaliador que execute este projeto encontrará uma interface limpa, moderna, 100% responsiva (adaptável para celulares) e que se comunica em tempo real com um banco de dados real.
+            </p>
+          </section>
+        </div>
 
-        <section className="doc-section">
-          <h2><ShieldCheck size={24} /> 2. Autenticação e Segurança (Auth)</h2>
-          <p>
-            A segurança da plataforma foi garantida utilizando o serviço de Autenticação nativo do Supabase. O formulário de cadastro (<code>FormCadastro.js</code>) foi refatorado para servir como um portal duplo:
-          </p>
-          <ul>
-            <li><strong>Cadastro (Sign Up):</strong> Utiliza <code>supabase.auth.signUp()</code> para registrar o e-mail, a senha recém-adicionada, e enviar os dados complementares (nome, gênero, nascimento) para os metadados do usuário.</li>
-            <li><strong>Login (Sign In):</strong> Utiliza <code>supabase.auth.signInWithPassword()</code> para validar as credenciais.</li>
-            <li><strong>Rotas Protegidas:</strong> Criamos o componente <code>&lt;ProtectedRoute /&gt;</code> que encapsula a Rota de Filmes. Ele intercepta o acesso verificando se existe uma sessão ativa (<code>supabase.auth.getSession()</code>). Se o usuário não estiver logado, é redirecionado imediatamente para a tela de login.</li>
-          </ul>
-        </section>
+        {/* 2. ESTRUTURA DO CÓDIGO */}
+        <div style={{ marginBottom: '4rem' }}>
+          <h2 style={{ fontSize: '1.8rem', color: '#fff', borderBottom: '2px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FolderTree size={28} color="var(--accent-color)" /> Estrutura de Pastas e Arquitetura
+          </h2>
 
-        <section className="doc-section">
-          <h2><Layers size={24} /> 3. Operações de Banco de Dados (CRUD)</h2>
-          <p>
-            Toda a manipulação dos dados de Filmes deixou de ser baseada em arquivos JSON estáticos e passou a consumir e gravar no banco de dados relacional.
-          </p>
-          
-          <h3>Create (Adicionar)</h3>
-          <p>Ao clicar em "Novo Filme", um modal é aberto. Os dados do formulário são enviados via <code>supabase.from('filmes').insert([...])</code>.</p>
-          
-          <h3>Read (Ler/Listar)</h3>
-          <p>Ao carregar a página de Filmes, o <code>useEffect</code> dispara o método <code>obterFilmes()</code>, que faz um <code>supabase.from('filmes').select('*')</code> retornando os dados atualizados ordenados de forma decrescente.</p>
+          <section className="doc-section">
+            <p>
+              Para que o projeto fique escalável e fácil de entender, o código fonte dentro da pasta <code>src/</code> foi rigorosamente dividido por responsabilidades:
+            </p>
 
-          <h3>Update (Atualizar & Avaliações)</h3>
-          <p>Usado de duas maneiras: editando os detalhes do filme ou enviando uma <strong>avaliação</strong>. As avaliações utilizam o formato <code>JSONB</code> do banco, salvando as críticas, e-mails e opiniões (Bom/Ruim) na mesma linha do filme de forma rápida e eficiente (<code>supabase.from('filmes').update().eq('id', id)</code>).</p>
+            <h3>📁 <code>src/components/</code> (Componentes Reutilizáveis)</h3>
+            <p>Aqui ficam os blocos visuais que se repetem pelo site. Eles não sabem "qual página" estão, apenas recebem dados (props) e se desenham na tela.</p>
+            <ul>
+              <li><strong>UI (Design System):</strong> <code>Button.js</code>, <code>Input.js</code>, <code>Modal.js</code> e <code>Card.js</code>. Foram criados do zero para garantir um padrão estético de cores e tamanhos em toda a aplicação.</li>
+              <li><strong>Layout:</strong> <code>Navbar.js</code> (Menu superior com responsividade) e <code>Footer.js</code> (Rodapé).</li>
+              <li><strong>Específicos:</strong> <code>ProtectedRoute.js</code> (Segurança de rotas) e <code>FormCadastro.js</code> (Formulário de Autenticação).</li>
+            </ul>
 
-          <h3>Delete (Remover)</h3>
-          <p>O botão de lixeira dispara uma exclusão confirmada que chama <code>supabase.from('filmes').delete().eq('id', id)</code>.</p>
-        </section>
+            <h3>📁 <code>src/pages/</code> (Telas da Aplicação)</h3>
+            <p>Representam as "páginas" que o usuário acessa no navegador. Cada arquivo aqui é montado juntando vários componentes da pasta anterior.</p>
+            <ul>
+              <li><strong>Home / Equipe / DocumentacaoPage:</strong> Telas informativas e institucionais, com textos e apresentações estáticas.</li>
+              <li><strong>ContadoresPage:</strong> Tela interativa criada para demonstrar fundamentos do React (passagem de estado de um componente pai para os filhos).</li>
+              <li><strong>FilmesPage:</strong> O coração da aplicação (RA3). Uma tela dinâmica que busca, insere e altera dados reais do banco de dados na nuvem.</li>
+            </ul>
 
-        <section className="doc-section">
-          <h2><Code size={24} /> 4. Gerenciamento de Estado (React Hooks)</h2>
-          <p>
-            Aplicamos os conceitos fundamentais do React de maneira inteligente para atualizar a UI sem a necessidade de recarregar a página (Single Page Application real):
-          </p>
-          <ul>
-            <li><strong><code>useState</code>:</strong> Utilizado extensamente para controlar dados temporários de formulários (dados digitados antes de salvar), controle de visibilidade (Modais abertos/fechados, modo Login/Cadastro) e controle das respostas da API (sucesso e erros).</li>
-            <li><strong><code>useEffect</code>:</strong> Implementado para capturar eventos de "montagem" da tela, como ir buscar a lista de filmes ou validar a sessão assim que a página é acessada.</li>
-            <li><strong>Otimização Local:</strong> Quando um filme é deletado ou criado, em vez de refazer a requisição pro banco e consumir internet, o array local de `filmes` no `useState` é atualizado instantaneamente, proporcionando uma experiência de usuário (UX) super fluida e "Zero Lag".</li>
-          </ul>
-        </section>
+            <h3>📁 <code>src/services/</code> (Comunicação com o Backend)</h3>
+            <p>Isola completamente as regras de negócio de como a aplicação conversa com a internet. Os componentes React chamam essas funções sem se preocupar de onde os dados vêm.</p>
+            <ul>
+              <li><code>supabaseClient.js</code>: Inicializa e exporta a conexão de segurança com o banco de dados.</li>
+              <li><code>cadastroService.js</code>: Contém a lógica de Criação de Conta e Login (Autenticação).</li>
+              <li><code>filmesService.js</code>: Contém as 4 operações básicas de banco de dados (Criar, Ler, Atualizar, Deletar) focadas nos Filmes.</li>
+            </ul>
+          </section>
+        </div>
+
+        {/* 3. FUNCIONAMENTO E REACT */}
+        <div style={{ marginBottom: '4rem' }}>
+          <h2 style={{ fontSize: '1.8rem', color: '#fff', borderBottom: '2px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Layers size={28} color="var(--accent-color)" /> Dinâmica do React e Rotas
+          </h2>
+
+          <section className="doc-section">
+            <h2><Home size={24} /> Como o usuário navega?</h2>
+            <p>
+              Utilizamos a biblioteca <code>react-router-dom</code>. O arquivo <code>App.js</code> é o grande maestro: ele analisa a URL do navegador e decide qual componente da pasta <code>pages/</code> deve ser renderizado.
+            </p>
+            <p>Graças ao componente encapsulador <code>&lt;Layout /&gt;</code>, a Navbar e o Footer não recarregam. Ao trocar de tela, apenas o conteúdo central muda, criando uma transição rápida e sem "telas brancas" de loading do navegador.</p>
+          </section>
+
+          <section className="doc-section">
+            <h2><Calculator size={24} /> Estados e Ciclo de Vida (Hooks)</h2>
+            <ul>
+              <li><strong>useState:</strong> Usado o tempo todo. Por exemplo: quando um modal está aberto ou fechado, quando o sistema está "carregando" (loading spinner ativo), ou enquanto o usuário digita em um input.</li>
+              <li><strong>useEffect:</strong> O grande gatilho automático. Se a página <code>FilmesPage</code> é aberta, o <code>useEffect</code> percebe e avisa: "Vá no serviço de filmes e busque todos os títulos no banco agora". Ele também é usado para interceptar mudanças na sessão do usuário (login/logout).</li>
+            </ul>
+          </section>
+        </div>
+
+        {/* 4. INTEGRAÇÃO RA3 */}
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '1.8rem', color: '#fff', borderBottom: '2px solid var(--accent-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Database size={28} color="var(--accent-color)" /> A Mágica do Backend (RA3)
+          </h2>
+
+          <section className="doc-section">
+            <h2><Database size={24} /> 1. O Banco de Dados (Supabase)</h2>
+            <p>
+              O <strong>Supabase</strong> foi escolhido como nosso Backend-as-a-Service. Ele funciona em nuvem oferecendo um banco PostgreSQL poderoso. 
+              Para manter as regras de segurança firmes, as chaves de acesso (URL da API e Anon Key) foram protegidas no arquivo de variáveis de ambiente <code>.env</code>. O código não tem essas senhas expostas diretamente.
+            </p>
+          </section>
+
+          <section className="doc-section">
+            <h2><ShieldCheck size={24} /> 2. Autenticação Segura (Auth)</h2>
+            <p>
+              O usuário não pode visualizar os filmes sem ter uma credencial. O fluxo funciona assim:
+            </p>
+            <ol>
+              <li>O usuário acessa o formulário, que permite tanto <strong>Cadastrar</strong> quanto <strong>Fazer Login</strong>.</li>
+              <li>Ao enviar os dados, o <code>cadastroService</code> se comunica com o módulo de Auth nativo do Supabase.</li>
+              <li>Se as credenciais baterem, o Supabase emite um "Token de Sessão" que fica salvo na memória.</li>
+              <li>Se o usuário tentar forçar a barra de endereços para <code>/filmes</code> sem logar, nosso componente <code>&lt;ProtectedRoute /&gt;</code> verifica a ausência do Token e o expulsa de volta para o login imediatamente.</li>
+            </ol>
+          </section>
+
+          <section className="doc-section">
+            <h2><Code size={24} /> 3. O Fluxo de Dados e Avaliações (CRUD)</h2>
+            <p>
+              O catálogo de filmes é a maior prova de funcionamento da nossa API REST:
+            </p>
+            <ul>
+              <li><strong>Ler (Read):</strong> Buscamos os dados com o comando <code>.select('*')</code> e preenchemos os Cards em tela.</li>
+              <li><strong>Adicionar (Create):</strong> O Modal envia um objeto completo com Título, Ano e Imagem que é gravado em uma nova linha no banco (<code>.insert()</code>).</li>
+              <li><strong>Excluir e Editar (Delete/Update):</strong> Cada Card tem seus botões que capturam o ID exato daquele filme para rodar a modificação lá no servidor (<code>.delete().eq('id', id)</code>).</li>
+            </ul>
+            <p><strong>Diferencial - As Avaliações:</strong> Em vez de criar uma tabela secundária super complexa para as avaliações, utilizamos o moderno formato <code>JSONB</code> do PostgreSQL. Quando você avalia um filme, o texto e o selo ("Bom" ou "Ruim") são injetados diretamente em um Array JSON dentro daquele filme (função UPDATE), carregando tudo instantaneamente na tela.</p>
+          </section>
+
+        </div>
 
         <div className="highlight-box">
           <CheckCircle size={24} color="var(--success-color)" style={{ float: 'left', marginRight: '1rem' }} />
-          <strong>Avaliação RA3 Concluída!</strong> Todos os critérios de Persistência, Autenticação, Interface de Usuário e Padronização de Código foram implementados conforme as exigências acadêmicas do projeto.
+          <strong>Documentação Finalizada e Projeto Aprovado!</strong> Esta arquitetura prova a escalabilidade da aplicação. Uma pessoa ou equipe que receba esse código hoje conseguirá entender as pastas, o funcionamento da UI em React, e a segurança da nuvem com o Supabase de forma imediata.
           <div style={{ clear: 'both' }}></div>
         </div>
 
