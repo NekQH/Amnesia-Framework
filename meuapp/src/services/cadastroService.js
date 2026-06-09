@@ -7,22 +7,34 @@ async function cadastrarUsuario(dados) {
     const { data, error } = await supabase.auth.signUp({
       email: dados.email,
       password: dados.senha,
-      options: {
-        data: {
-          nome: dados.nome,
-          dataNascimento: dados.dataNascimento,
-          genero: dados.genero
-        }
-      }
     });
 
     if (error) {
       throw error;
     }
 
+    const authId = data?.user?.id;
+
+    if (authId) {
+      // Inserir os dados na tabela 'usuarios' logo após criar a autenticação
+      const { error: profileError } = await supabase.from('usuarios').insert([
+        {
+          id: authId,
+          nome: dados.nome,
+          email: dados.email,
+          data_nascimento: dados.dataNascimento,
+          genero: dados.genero
+        }
+      ]);
+
+      if (profileError) {
+        console.error("Erro ao inserir perfil na tabela usuarios:", profileError);
+      }
+    }
+
     return {
       sucesso: true,
-      id: data?.user?.id,
+      id: authId,
       mensagem: `Usuário ${dados.nome} cadastrado com sucesso!`,
     };
   } catch (error) {
@@ -39,6 +51,18 @@ async function loginUsuario(email, senha) {
 
   if (error) {
     throw new Error("Credenciais inválidas ou erro no login.");
+  }
+
+  // Buscar nome do usuario na tabela 'usuarios'
+  if (data?.user?.id) {
+    const { data: profile } = await supabase.from('usuarios').select('nome').eq('id', data.user.id).single();
+    if (profile && profile.nome) {
+      // Injeta o nome retornado do banco de dados na resposta para a UI utilizar
+      if (!data.user.user_metadata) {
+        data.user.user_metadata = {};
+      }
+      data.user.user_metadata.nome = profile.nome;
+    }
   }
 
   return data;
